@@ -2,3 +2,5 @@ config.toml
 payload.json
 *.bin
 dist/
+.vscode/
+__debug*
