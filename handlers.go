@@ -127,13 +127,14 @@ func handlePostback(w http.ResponseWriter, r *http.Request) {
 	app.logger.DebugWith("sending message").String("provider", provider).String("message", fmt.Sprintf("%#+v", message)).Write()
 
 	// Send message.
-	if err := p.Push(message); err != nil {
+	response, err := p.Push(message)
+	if err != nil {
 		app.logger.ErrorWith("error sending message").Err("err", err).Write()
 		sendErrorResponse(w, "error sending message", http.StatusInternalServerError, nil)
 		return
 	}
 
-	sendResponse(w, "OK")
+	sendResponse(w, response)
 	return
 }
 

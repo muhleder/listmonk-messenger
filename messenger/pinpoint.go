@@ -37,10 +37,10 @@ func (p pinpointMessenger) Name() string {
 }
 
 // Push sends the sms through pinpoint API.
-func (p pinpointMessenger) Push(msg Message) error {
+func (p pinpointMessenger) Push(msg Message) (string, error) {
 	phone, ok := msg.Subscriber.Attribs["phone"].(string)
 	if !ok {
-		return fmt.Errorf("could not find subscriber phone")
+		return "", fmt.Errorf("could not find subscriber phone")
 	}
 
 	body := string(msg.Body)
@@ -64,7 +64,7 @@ func (p pinpointMessenger) Push(msg Message) error {
 
 	out, err := p.client.SendMessages(payload)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if p.cfg.Log {
@@ -73,7 +73,7 @@ func (p pinpointMessenger) Push(msg Message) error {
 		}
 	}
 
-	return nil
+	return "", nil
 }
 
 func (p pinpointMessenger) Flush() error {

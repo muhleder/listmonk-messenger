@@ -30,10 +30,10 @@ func (t twilioMessenger) Name() string {
 }
 
 // Push sends the sms through twilio API.
-func (t twilioMessenger) Push(msg Message) error {
+func (t twilioMessenger) Push(msg Message) (string, error) {
 	phone, ok := msg.Subscriber.Attribs["phone"].(string)
 	if !ok {
-		return fmt.Errorf("could not find subscriber phone")
+		return "", fmt.Errorf("could not find subscriber phone")
 	}
 
 	body := string(msg.Body)
@@ -53,7 +53,7 @@ func (t twilioMessenger) Push(msg Message) error {
 
 	out, err := t.client.Api.CreateMessage(payload)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if t.cfg.Log {
@@ -61,7 +61,7 @@ func (t twilioMessenger) Push(msg Message) error {
 		t.logger.InfoWith("successfully sent sms").String("phone", phone).String("result", string(response)).Write()
 	}
 
-	return nil
+	return "", nil
 }
 
 func (t twilioMessenger) Flush() error {

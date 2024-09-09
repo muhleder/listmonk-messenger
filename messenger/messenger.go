@@ -8,7 +8,7 @@ import (
 
 type Messenger interface {
 	Name() string
-	Push(Message) error
+	Push(Message) (string, error)
 	Flush() error
 	Close() error
 }

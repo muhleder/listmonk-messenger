@@ -37,7 +37,7 @@ func (s sesMessenger) Name() string {
 }
 
 // Push sends the sms through pinpoint API.
-func (s sesMessenger) Push(msg Message) error {
+func (s sesMessenger) Push(msg Message) (string, error) {
 	// convert attachments to smtppool.Attachments
 	var files []smtppool.Attachment
 	if msg.Attachments != nil {
@@ -76,7 +76,7 @@ func (s sesMessenger) Push(msg Message) error {
 
 	emailB, err := email.Bytes()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	input := &ses.SendRawEmailInput{
@@ -89,14 +89,14 @@ func (s sesMessenger) Push(msg Message) error {
 
 	out, err := s.client.SendRawEmail(input)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if s.cfg.Log {
 		s.logger.InfoWith("successfully sent email").String("email", msg.Subscriber.Email).String("results", fmt.Sprintf("%#+v", out)).Write()
 	}
 
-	return nil
+	return *out.MessageId, nil
 }
 
 func (s sesMessenger) Flush() error {
